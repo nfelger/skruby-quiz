@@ -1,4 +1,4 @@
 #!/usr/bin/env ruby
 require File.expand_path(File.dirname(__FILE__) + '/../lib/make_anagrams')
 
-puts MakeAnagrams.new(ARGF.readlines).formatted_anagram_dictionary
+puts MakeAnagrams.new(ARGF.readlines, ARGV.pop == '--debug').formatted_anagram_dictionary

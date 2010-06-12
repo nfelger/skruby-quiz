@@ -1,13 +1,14 @@
 class MakeAnagrams
-  def initialize(word_list)
-    @words = word_list.map{|word| word.chomp}
-    @words.reject!{|word| illegal?(word)}    
+  def initialize(word_list, debug)
+    @word_list = word_list.map{|word| word.chomp}
+    @word_list.reject!{|word| illegal?(word)}
+    @debug = debug
   end
   
   def formatted_anagram_dictionary
     output = []
     anagrams.keys.sort.each do |entry|
-      anagram_set = anagrams[entry]
+      anagram_set = anagrams[entry].sort
       case anagram_set.size
       when 0
         next
@@ -27,16 +28,35 @@ class MakeAnagrams
   def anagrams
     @dictionary ||= begin
       dictionary = {}
-      @words.each do |word|
-        dictionary[word] = []
-        anagram_set = (@words - [word]).select{|candidate| anagrams?(word, candidate)}.sort
-        dictionary[word] += anagram_set unless anagram_set.empty?
+      words_of_size.keys.sort.each do |n|
+        while word = words_of_size[n].shift
+          STDERR.puts word if @debug
+          next if dictionary[word]
+          
+          anagram_set = words_of_size[n].select{|candidate| anagrams?(word, candidate)}
+          dictionary[word] = anagram_set
+          
+          anagram_set.each do |anagram|
+            dictionary[anagram] = [word] + (anagram_set - [anagram])
+          end
+        end
       end
       dictionary
     end
   end
   
   private
+  
+  def words_of_size
+    @words ||= begin
+      words = {}
+      @word_list.each do |word|
+        words[word.size] ||= []
+        words[word.size] << word
+      end
+      words
+    end
+  end
   
   def illegal?(word)
     word =~ /[^a-z]/i
