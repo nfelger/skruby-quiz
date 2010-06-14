@@ -10,7 +10,7 @@ class MakeAnagrams
   
   def formatted_anagram_dictionary    
     words_with_anagrams.
-      select {|_, anagrams| anagrams.printable?}.
+      select { |_, anagrams| anagrams.printable? }.
       map { |word, anagrams| anagrams.entry_for(word) }.
       join("\n")
   end
@@ -61,10 +61,9 @@ class AnagramSet
     case @words.size
     when 2
       [word, @words.detect{|a| a != word}].join(' ')
-    else
-      anagrams = (@words - [word]).to_a
-      if word[0] < anagrams.first[0]
-        word + ' ' + anagrams.join(' ')
+    else      
+      if word == @words.first
+        @words.to_a.join(' ')
       else
         word + " (See '#{lemma}')"
       end
